@@ -1,0 +1,140 @@
+//https://leetcode.com/problems/regular-expression-matching/submissions/
+function isMatch(s, p) {
+    //go through p, and check if s is matching, repeat until you find something wrong
+    const regex = p;
+    const test = s.split(''); //convert to list to make easy modifications
+    let i = 1;
+    while (i != regex.length) {
+        const lastLetter = regex[i - 1];
+        const letter = regex[i];
+        const testLetter = test[0];
+        if (testLetter == undefined) {
+            break; //finished checking
+        }
+        let failed = true;
+        let extraInfo = "";
+        if (letter == test[0]) {
+            failed = false;
+        }
+        else if (letter == "*" && (lastLetter == testLetter || lastLetter == ".")) {
+            failed = false;
+        }
+        else if (letter == ".") {
+            failed = false;
+        }
+        if (letter == "*" && !(lastLetter == testLetter || lastLetter == ".")) {
+            //s = 'aab', p = 'c*a*b*'
+            failed = false;
+            extraInfo = "nothingWildcard";
+        }
+        if (failed == true) {
+            return false;
+        }
+        if (letter != "*") {
+            if (extraInfo != "nothingWildcard") {
+                i += 1;
+            }
+        }
+        test.splice(0, 1);
+    }
+    if (test.length == 0) {
+        return true;
+    }
+    else {
+        return false; //regex was not enough to cover text
+    }
+}
+;
+//console.log(isMatch("aaa", "c*a*b*"));
+//May try later, only have 169/353 matches, I believe I have got upto 352/353 before (in python - time limit), however this problem seems to be very complicated
+//https://leetcode.com/problems/divide-two-integers/
+/*
+function divide(dividend: number, divisor: number): number {
+    //keep on adding divisor until the sum is > divident
+    let inverseResult = false;
+    if (dividend < 0 && divisor > 0) {
+        inverseResult = true;
+        dividend *= -1;
+    }
+    else if (dividend > 0 && divisor < 0) {
+        inverseResult = true;
+        divisor *= -1;
+    }
+    else if (dividend < 0 && divisor < 0) {
+        dividend *= -1;
+        divisor *= -1;
+    }
+    
+    let sum = 0;
+    let result = 0;
+    while (sum <= dividend) {
+        sum += divisor;
+        result += 1;
+    }
+    result -= 1;
+    
+    if (inverseResult == true) {
+        result *= -1;
+    }
+    if (result > 2147483647) {
+        result = 2147483647;
+    }
+    else if (result < -2147483648) {
+        result = -2147483648;
+    }
+    
+    return result;
+};
+*/
+//Wrong answer, but works :(
+function divide(dividend, divisor) {
+    let result = dividend / divisor;
+    if (result > 2147483647) {
+        result = 2147483647;
+    }
+    else if (result < -2147483648) {
+        result = -2147483648;
+    }
+    if (result < 0) {
+        return Math.ceil(result);
+    }
+    else {
+        return Math.floor(result);
+    }
+}
+;
+console.log(divide(-2147483648, -1));
+//https://leetcode.com/problems/median-of-two-sorted-arrays/
+function findMedianSortedArrays(nums1, nums2) {
+    //first merge the 2 arrays
+    let merged = [];
+    while (true) {
+        if (nums1.length == 0) {
+            merged = merged.concat(nums2);
+            break;
+        }
+        else if (nums2.length == 0) {
+            merged = merged.concat(nums1);
+            break;
+        }
+        if (nums1[0] < nums2[0]) {
+            merged.push(nums1[0]);
+            nums1.splice(0, 1);
+        }
+        else {
+            merged.push(nums2[0]);
+            nums2.splice(0, 1);
+        }
+    }
+    const medianIndex = (merged.length + 1) / 2 - 1; //-1 because in maths they start counting from 1 instead of 0
+    if (medianIndex % 1 != 0) {
+        const num1 = merged[medianIndex - 0.5];
+        const num2 = merged[medianIndex + 0.5];
+        return (num1 + num2) / 2;
+    }
+    else {
+        return merged[medianIndex];
+    }
+}
+;
+//console.log(findMedianSortedArrays([2], []));

@@ -1,0 +1,10 @@
+/* https://stackoverflow.com/questions/34474651/typescript-compile-to-single-file */
+
+{
+  "compilerOptions": {
+    "lib": ["es5", "es6", "dom"],
+    "target": "ES2022",
+    "rootDir": "./",
+    "outFile": "build.js"
+  }
+}
