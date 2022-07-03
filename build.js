@@ -45,8 +45,26 @@ function isMatch(s, p) {
     }
 }
 ;
-//console.log(isMatch("aaa", "c*a*b*"));
 //May try later, only have 169/353 matches, I believe I have got upto 352/353 before (in python - time limit), however this problem seems to be very complicated
+// https://leetcode.com/problems/two-sum/
+function twoSum(nums, target) {
+    //could just go through every item and check every other item, however that is inefficient
+    //go through list once, and store number + index in a dictionary, then check if the other number required already exists
+    const numbers = {}; //[ Number: Index ]
+    for (let i = 0; i != nums.length; i += 1) {
+        const num = nums[i];
+        if (numbers[target - num] != undefined) {
+            const index = i;
+            const otherIndex = numbers[target - num];
+            return [index, otherIndex];
+        }
+        else {
+            numbers[num] = i;
+        }
+    }
+    return [];
+}
+;
 //https://leetcode.com/problems/divide-two-integers/
 /*
 function divide(dividend: number, divisor: number): number {
@@ -103,7 +121,78 @@ function divide(dividend, divisor) {
     }
 }
 ;
-console.log(divide(-2147483648, -1));
+//https://leetcode.com/problems/add-two-numbers/
+class ListNode {
+    val;
+    next;
+    constructor(val, next) {
+        this.val = (val === undefined ? 0 : val);
+        this.next = (next === undefined ? null : next);
+    }
+}
+function addTwoNumbers(l1, l2) {
+    const [list1, list2] = [convertLinkedListArray(l1).reverse(), convertLinkedListArray(l2).reverse()];
+    const [num1, num2] = [BigInt(list1.join("")), BigInt(list2.join(""))];
+    const result = num1 + num2;
+    const resultReversedString = String(result).split("").reverse().join(""); //converting to string -> list -> reversed -> string
+    const resultReversedArray = Array.from(String(resultReversedString), Number);
+    return convertArrayToLinkedList(resultReversedArray);
+}
+;
+const convertLinkedListArray = (li) => {
+    const array = [];
+    let currentNode = li;
+    while (true) {
+        array.push(currentNode.val);
+        if (currentNode.next == null) {
+            break;
+        }
+        else {
+            currentNode = currentNode.next;
+        }
+    }
+    return array;
+};
+const convertArrayToLinkedList = (array) => {
+    let linkedList = new ListNode(array[array.length - 1], null);
+    for (let i = array.length - 2; i != -1; i -= 1) {
+        const newLinkedList = new ListNode(array[i], linkedList);
+        linkedList = newLinkedList;
+    }
+    return linkedList;
+};
+//https://leetcode.com/problems/longest-substring-without-repeating-characters/
+function lengthOfLongestSubstring(s) {
+    //go through string, and for each letter add it to a dictionary, and check if it already existed.
+    //once you get a repeat then you stop, save that score and start again from where the original letter was repeated
+    let i = 0;
+    let letterStore = {}; //[letter: index]
+    let longestSubstring = 0;
+    while (i != s.length) {
+        const letter = s[i];
+        if (letterStore[letter] == undefined) { //letter has not been repeated
+            letterStore[letter] = i;
+        }
+        else {
+            const substringLength = Object.keys(letterStore).length; //just check length of letterScore
+            if (substringLength > longestSubstring) {
+                longestSubstring = substringLength;
+            }
+            i = letterStore[letter] + 1; //go to that position + 1 (the letter in front of the repeated one)
+            letterStore = {};
+            const newLetter = s[i];
+            letterStore[newLetter] = i; //start again
+        }
+        i += 1;
+    }
+    //check again since the substring may have just continued at the end without repeating
+    const substringLength = Object.keys(letterStore).length; //just check length of letterScore
+    if (substringLength > longestSubstring) {
+        longestSubstring = substringLength;
+    }
+    return longestSubstring;
+}
+;
 //https://leetcode.com/problems/median-of-two-sorted-arrays/
 function findMedianSortedArrays(nums1, nums2) {
     //first merge the 2 arrays
@@ -137,4 +226,3 @@ function findMedianSortedArrays(nums1, nums2) {
     }
 }
 ;
-//console.log(findMedianSortedArrays([2], []));
