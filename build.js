@@ -256,3 +256,88 @@ const isPalindrome = (word: string) => {
 }
 */
 //Brute force will not work, I get time limit exceeded error
+//https://leetcode.com/problems/zigzag-conversion/
+//order s into the pattern, then read row by row
+//PAYPALISHIRING
+//P     I     N
+// A   L S   I G
+//  Y A   H R
+//   P     I
+function convert(s, numRows) {
+    if (numRows == 1) {
+        return s; //dont need to do anything if its all on 1 row
+    }
+    const rows = [];
+    for (let i = 0; i != numRows; i += 1) {
+        rows.push([]);
+    }
+    let pointer = 0;
+    let ascDesc = 1; //asc = 1, desc = -1
+    for (const letter of s) {
+        rows[pointer].push(letter);
+        if (pointer == 0) {
+            ascDesc = 1;
+        }
+        else if (pointer == rows.length - 1) {
+            ascDesc = -1;
+        }
+        pointer += ascDesc;
+    }
+    let returnString = "";
+    for (const row of rows) {
+        returnString += row.join("");
+    }
+    return returnString;
+}
+;
+//https://leetcode.com/problems/reverse-integer/
+const reverseString = (s) => {
+    let returnString = "";
+    for (let i = s.length - 1; i != -1; i -= 1) {
+        returnString += s[i];
+    }
+    return returnString;
+};
+function reverse(x) {
+    const negative = (x < 0) ? true : false;
+    if (negative == true) {
+        x *= -1;
+    }
+    let reversed = Number(reverseString(String(x)));
+    if (negative == true) {
+        reversed *= -1;
+    }
+    if (reversed < -(2 ** 31) || reversed > 2 ** 31 - 1) { //outside 32 bit integer range
+        reversed = 0;
+    }
+    return reversed;
+}
+;
+//https://leetcode.com/problems/string-to-integer-atoi/
+function myAtoi(s) {
+    s = s.replace(" ", ""); //remove whitespace 1
+    s = s.replace(" ", ""); //remove whitespace 2
+    s = s.replace("   ", ""); //remove whitespace 3
+    const negative = (s[0] == "-") ? true : false;
+    if (negative == true) {
+        s = s.slice(1, s.length);
+    }
+    const sList = s.split(""); //remove characters which aren't numbers
+    let i = 0;
+    while (i != sList.length) {
+        if (isNaN(Number(sList[i])) == true && sList[i] != "-") {
+            sList.splice(i, 1);
+        }
+        else {
+            i += 1;
+        }
+    }
+    s = sList.join("");
+    let value = Number(s);
+    if (negative == true) {
+        value *= -1;
+    }
+    return value;
+}
+;
+//keeps failing but I don't know what this question is asking me to do...
