@@ -1,5 +1,6 @@
 //https://leetcode.com/problems/add-two-numbers/
 
+/*
 class ListNode {
     val: number
     next: ListNode | null
@@ -8,6 +9,7 @@ class ListNode {
         this.next = (next===undefined ? null : next)
     }
 }
+*/
 
 function addTwoNumbers(l1: ListNode | null, l2: ListNode | null): ListNode | null {
     const [list1, list2] = [convertLinkedListArray(l1).reverse(), convertLinkedListArray(l2).reverse()];

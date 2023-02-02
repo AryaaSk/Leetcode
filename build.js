@@ -1,3 +1,33 @@
+function romanToInt(s) {
+    const valueTable = {
+        "I": 1,
+        "V": 5,
+        "X": 10,
+        "L": 50,
+        "C": 100,
+        "D": 500,
+        "M": 1000
+    };
+    s += "I"; //for standardisation
+    //M,CM,XC,IV
+    let total = 0;
+    let i = 0;
+    while (i != s.length) {
+        const currentValue = valueTable[s[i]];
+        const nextValue = valueTable[s[i + 1]];
+        if (currentValue < nextValue) {
+            total += (nextValue - currentValue);
+            i += 1;
+        }
+        else {
+            total += currentValue;
+        }
+        i += 1;
+    }
+    total -= 1;
+    return total;
+}
+;
 //https://leetcode.com/problems/regular-expression-matching/submissions/
 function isMatch(s, p) {
     //go through p, and check if s is matching, repeat until you find something wrong
@@ -121,6 +151,34 @@ function intToRoman(num) {
     return returnNumeral;
 }
 ;
+function longestCommonPrefix(strs) {
+    const prefixMap = {};
+    for (const str of strs) {
+        //Generate all possible prefixes from this string
+        for (let i = 1; i != str.length + 1; i += 1) {
+            const prefix = str.substring(0, i);
+            if (prefixMap[prefix] == undefined) {
+                prefixMap[prefix] = 1;
+            }
+            else {
+                prefixMap[prefix] += 1;
+            }
+        }
+    }
+    //Want a prefix which is common among all the elements in array, therefore filter out prefixMap
+    const highestPrefix = { prefix: "", length: 0 };
+    for (const key in prefixMap) {
+        if (prefixMap[key] == strs.length) {
+            const prefix = key;
+            if (prefix.length > highestPrefix.length) {
+                highestPrefix.prefix = prefix;
+                highestPrefix.length = prefix.length;
+            }
+        }
+    }
+    return highestPrefix.prefix;
+}
+;
 // https://leetcode.com/problems/two-sum/
 function twoSum(nums, target) {
     //could just go through every item and check every other item, however that is inefficient
@@ -138,6 +196,94 @@ function twoSum(nums, target) {
         }
     }
     return [];
+}
+;
+function isValid(s) {
+    const pairs = {
+        "(": ")",
+        "[": "]",
+        "{": "}",
+    };
+    const complimentaryOrder = [];
+    let orderBroken = false;
+    for (const digit of s) {
+        if (pairs[digit] != undefined) {
+            //this is an opening bracket, since it has a complimentary value in the pairs
+            complimentaryOrder.push(pairs[digit]);
+        }
+        else {
+            if (digit == complimentaryOrder[complimentaryOrder.length - 1]) {
+                //needs to be the most recent digit to close off the newest bracket
+                complimentaryOrder.pop();
+            }
+            else {
+                orderBroken = true;
+                break;
+            }
+        }
+    }
+    if (complimentaryOrder.length != 0) { //indicates that the brackets were not fully closed off before the string ended
+        orderBroken = true;
+    }
+    return !(orderBroken);
+}
+;
+class ListNode {
+    val;
+    next;
+    constructor(val, next) {
+        this.val = (val === undefined ? 0 : val);
+        this.next = (next === undefined ? null : next);
+    }
+}
+const list1 = new ListNode(1, new ListNode(2, new ListNode(4, null)));
+const list2 = new ListNode(1, new ListNode(3, new ListNode(4, null)));
+function mergeTwoLists(list1, list2) {
+    //traverse both lists in parallel, add the lowest number on each one
+    const head = new ListNode(null, null);
+    let headPointer = head;
+    let list1Pointer = list1;
+    let list2Pointer = list2;
+    if (list1Pointer == null) {
+        return list2Pointer;
+    }
+    else if (list2Pointer == null) {
+        return list1Pointer;
+    }
+    while (true) {
+        const [val1, val2] = [list1Pointer.val, list2Pointer.val];
+        //console.log(val1, val2);
+        if (val1 < val2) {
+            headPointer.val = val1;
+            headPointer.next = new ListNode(val2, new ListNode(null, null));
+        }
+        else {
+            headPointer.val = val2;
+            headPointer.next = new ListNode(val1, new ListNode(null, null));
+        }
+        [list1Pointer, list2Pointer] = [list1Pointer.next, list2Pointer.next];
+        if (list1Pointer == null && list2Pointer == null) {
+            //both lists have ended together, this means the headPointer will be at the final value, need to remove it
+            headPointer = headPointer.next;
+            headPointer.next = null;
+            break;
+        }
+        else {
+            if (list1Pointer == null) {
+                //Add all the remaining terms in list2
+                headPointer.next = list2Pointer;
+                break;
+            }
+            else if (list2Pointer == null) {
+                headPointer.next = list1Pointer;
+                break;
+            }
+            else {
+                headPointer = headPointer.next.next; //continue
+            }
+        }
+    }
+    return head;
 }
 ;
 function strStr(haystack, needle) {
@@ -210,14 +356,16 @@ function divide(dividend, divisor) {
 }
 ;
 //https://leetcode.com/problems/add-two-numbers/
+/*
 class ListNode {
-    val;
-    next;
-    constructor(val, next) {
-        this.val = (val === undefined ? 0 : val);
-        this.next = (next === undefined ? null : next);
+    val: number
+    next: ListNode | null
+    constructor(val?: number, next?: ListNode | null) {
+        this.val = (val===undefined ? 0 : val)
+        this.next = (next===undefined ? null : next)
     }
 }
+*/
 function addTwoNumbers(l1, l2) {
     const [list1, list2] = [convertLinkedListArray(l1).reverse(), convertLinkedListArray(l2).reverse()];
     const [num1, num2] = [BigInt(list1.join("")), BigInt(list2.join(""))];
