@@ -1,32 +1,22 @@
 function isValid(s: string): boolean {
-    const pairs = {
-        "(" : ")",
-        "[" : "]",
-        "{" : "}",
-    };
+    if (s.length % 2 == 1) return false; //for valid must have many pairs of brackets
 
-    const complimentaryOrder: string[] = [];
-    let orderBroken = false;
-    for (const digit of s) {
-        if (pairs[digit] != undefined) {
-            //this is an opening bracket, since it has a complimentary value in the pairs
-            complimentaryOrder.push(pairs[digit]);
-        }
+    //use a stack, if its an open bracket, then add to stack, otherwise if its a close bracket, try to close stack
+    const bracketPairs = { "}" : "{", "]" : "[", ")" : "(" };
+
+    const bracketStack = [];
+    for (const bracket of s) {
+        if (bracketPairs[bracket] == undefined) bracketStack.push(bracket); //open bracket
         else {
-            if (digit == complimentaryOrder[complimentaryOrder.length - 1]) {
-                //needs to be the most recent digit to close off the newest bracket
-                complimentaryOrder.pop();
-            }
-            else {
-                orderBroken = true;
-                break;
-            }
+            //close bracket
+            const finalBracket = bracketStack.pop();
+            if (bracketPairs[bracket] != finalBracket) return false;
         }
     }
 
-    if (complimentaryOrder.length != 0) { //indicates that the brackets were not fully closed off before the string ended
-        orderBroken = true;
-    }
-
-    return !(orderBroken);
+    if (bracketStack.length != 0) return false;
+    
+    return true;
 };
+
+console.log(isValid("(}"))
