@@ -1,85 +1,5 @@
 /*
 function search(nums: number[], target: number): number {
-    //deal with outlier cases first
-    if (nums.length == 1) {
-        if (nums[0] == target) {
-            return 0;
-        }
-        else {
-            return -1;
-        }
-    }
-
-    //given list which has been rotated around pivot (index [0])
-    //check for target element
-
-    //find index of lowest element in list (the sign change)
-    let leapSize = Math.ceil((nums.length - 1) / 2);
-    let i = 0;
-    while (true) {
-        while (nums[i] < nums[i + leapSize]) {
-            i += leapSize;
-        }
-
-        if (nums[i] > nums[i + 1]) {
-            i += 1;
-            break;
-        }
-        if (leapSize == 0) {
-            i = 0; //ascending order
-            break;
-        }
-        leapSize = Math.ceil((leapSize - 1) / 2);
-    }
-    const lowestElementIndex = i;
-
-    if (i == 0) {
-        return BinarySearch(nums, target);
-    }
-
-    //otherwise split into big and small list
-    const bigList = nums;
-    const smallList = bigList.splice(i);
-    
-    const pivotElement = bigList[0];
-    if (target < pivotElement) {
-        const index = BinarySearch(smallList, target);
-        return index != -1 ? index + lowestElementIndex : -1;
-    }
-    else {
-        return BinarySearch(bigList, target);
-    }
-};
-
-const BinarySearch = (list: number[], target: number) => {
-    let indexes: number[] = []; //keep index list coupled to main list to easily return indexes
-    for (let i = 0; i != list.length; i += 1) {
-        indexes.push(i);
-    }
-
-    while (true) {
-        const i = Math.ceil((list.length - 1) / 2);
-        if (list[i] == target) {
-            return indexes[i]
-        }
-        if (list.length == 1 || list.length == 0) {
-            return -1; //doesn't exist in list
-        }
-
-        //otherwise split list
-        if (target > list[i]) {
-            list = list.splice(i);
-            indexes = indexes.splice(i);
-        }
-        else {
-            list.splice(i);
-            indexes.splice(i);
-        }
-    }
-}
-*/
-
-function search(nums: number[], target: number): number {
     let indexes: number[] = [];
     for (let i = 0; i != nums.length; i += 1) {
         indexes.push(i);
@@ -125,5 +45,50 @@ function search(nums: number[], target: number): number {
         }
     }
 }
+*/
 
-console.log(search([3, 1], 3));
+function search(nums: number[], target: number): number {
+    //list can be split into 2 sorted areas
+    //we want to check we are in the correct area, which can be done using the reference value
+
+    if (nums.length == 1) {
+        if (target == nums[0]) return 0;
+        else return -1;
+    }
+
+    const referenceValue = nums[0]; //all items to the right of reference value will be greater, until we reach the second list; if the current item < reference, we know it is part of the second list
+    if (target == referenceValue) return 0;
+
+    const targetSide = target > referenceValue; //true means it is in first section, false means second section
+
+    //binary search with modified narrow code
+    let [left, right] = [1, nums.length - 1];
+    while (left <= right) {
+        const midIndex = (left + right) >> 1;
+        const checkNum = nums[midIndex];
+
+        //before using regular binary search, we want to check whether checkNum is on the same 'side' as the target
+        const checkNumSide = checkNum > referenceValue;
+        if (targetSide == checkNumSide) {
+            //currently we are in the correct section, so we can narrow down binary search like usual
+            if (target == checkNum) return midIndex;
+            else if (target > checkNum) left = midIndex + 1;
+            else right = midIndex - 1;
+        }
+        else {
+            //we are on the wrong side, e.g. target is in the first section but checkNum is in the second section.
+            //in this case, we know all elements to the right and including checkNum will be incorrect, so we can exclude them all
+            //otherwise, if target was in second section and checkNum was in first section, we know all elements to the left and including checkNum will be incorrect
+            if (checkNumSide == false) {
+                right = midIndex - 1;
+            }
+            else {
+                left = midIndex + 1;
+            }
+        }
+    }
+
+    return -1;
+}
+
+console.log(search([4,5,6,7,0,1,2], 0));
