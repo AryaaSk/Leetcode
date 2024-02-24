@@ -3,7 +3,7 @@
 {
   "compilerOptions": {
     "lib": ["es5", "es6", "dom", "ES2020", "ES2021"],
-    "target": "es2023",
+    "target": "es2022",
     "rootDir": "./",
     "outFile": "build.js"
   }
